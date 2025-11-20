@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>ghostfolio-actual-sync</Name>
+  <Repository>mchal/ghostfolio-actual-sync:latest</Repository>
+  <Registry>https://registry.hub.docker.com/u/mchal/ghostfolio-actual-sync</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/mchal/ghostfolio-actual-sync</Support>
+  <Project>https://github.com/mchal/ghostfolio-actual-sync</Project>
+  <Overview>Sync Ghostfolio portfolio account values to Actual Budget as reconciliation transactions. This container is designed to run once and exit, making it perfect for scheduled execution via cron jobs or Unraid's User Scripts plugin.</Overview>
+  <Category>Tools: Finance</Category>
+  <WebUI/>
+  <ExtraParams>--rm</ExtraParams>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled>1700000000</DateInstalled>
+  <Description>Sync Ghostfolio portfolio account values to Actual Budget as reconciliation transactions. This container is designed to run once and exit, making it perfect for scheduled execution via cron jobs or Unraid's User Scripts plugin.&#xD;
+&#xD;
+Key Features:&#xD;
+- Syncs investment values + cash balances from Ghostfolio accounts&#xD;
+- Creates reconciliation transactions in Actual Budget&#xD;
+- Configurable account mapping&#xD;
+- Optional Fear &amp; Greed index updates&#xD;
+- Designed for cron scheduling (runs once and exits)&#xD;
+&#xD;
+Setup Instructions:&#xD;
+1. Create config.json in your config directory with your API credentials&#xD;
+2. Map your accounts in the configuration&#xD;
+3. Schedule with cron or User Scripts plugin&#xD;
+&#xD;
+For detailed setup instructions, see the README-Docker.md file.</Description>
+  <Networking>
+    <Mode>bridge</Mode>
+    <Publish/>
+  </Networking>
+  <Data>
+    <Volume>
+      <HostDir>/mnt/user/appdata/ghostfolio-actual-sync/config</HostDir>
+      <ContainerDir>/app/config</ContainerDir>
+      <Mode>ro</Mode>
+    </Volume>
+  </Data>
+  <Environment>
+    <Variable>
+      <Value>production</Value>
+      <Name>NODE_ENV</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>Europe/London</Value>
+      <Name>TZ</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>/app/config/config.json</Value>
+      <Name>CONFIG_PATH</Name>
+      <Mode/>
+    </Variable>
+  </Environment>
+  <Labels/>
+  <Config Name="Config Directory" Target="/app/config" Default="/mnt/user/appdata/ghostfolio-actual-sync/config" Mode="ro" Description="Directory containing config.json file with API credentials and account mappings" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/ghostfolio-actual-sync/config</Config>
+  <Config Name="Node Environment" Target="NODE_ENV" Default="production" Mode="" Description="Node.js environment setting" Type="Variable" Display="advanced" Required="false" Mask="false">production</Config>
+  <Config Name="Timezone" Target="TZ" Default="Europe/London" Mode="" Description="Container timezone (e.g., Europe/London, America/New_York, etc.)" Type="Variable" Display="always" Required="false" Mask="false">Europe/London</Config>
+  <Config Name="Config File Path" Target="CONFIG_PATH" Default="/app/config/config.json" Mode="" Description="Path to configuration file inside container" Type="Variable" Display="advanced" Required="false" Mask="false">/app/config/config.json</Config>
+</Container>

@@ -1,0 +1,22 @@
+{
+  "name": "ghostfolio-actual-sync",
+  "version": "1.0.0",
+  "description": "Sync Ghostfolio account values to Actual Budget",
+  "main": "sync.js",
+  "scripts": {
+    "start": "node sync.js",
+    "dry-run": "node sync.js --dry-run"
+  },
+  "dependencies": {
+    "@actual-app/api": "^25.11.0",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.0"
+  },
+  "keywords": [
+    "ghostfolio",
+    "actual-budget",
+    "sync"
+  ],
+  "author": "",
+  "license": "MIT"
+}

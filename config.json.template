@@ -1,0 +1,15 @@
+{
+  "ghostfolio_base_url": "https://your-ghostfolio-instance.com",
+  "ghostfolio_password": "your-ghostfolio-access-token-here",
+  "actual_base_url": "https://your-actual-budget-instance.com",
+  "actual_password": "your-actual-budget-password",
+  "actual_budget_id": "your-budget-id-from-actual-budget",
+  "account_mapping": {
+    "Ghostfolio Account Name 1": "Actual Budget Account Name 1",
+    "Ghostfolio Account Name 2": "Actual Budget Account Name 2",
+    "Example ISA": "Investment ISA",
+    "Example GIA": "Investment Account"
+  },
+  "trigger_fear_and_greed": false,
+  "log_level": "INFO"
+}

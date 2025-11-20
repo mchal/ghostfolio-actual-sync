@@ -1,0 +1,17 @@
+services:
+  ghostfolio-actual-sync:
+    build: .
+    container_name: ghostfolio-actual-sync
+    restart: unless-stopped
+    volumes:
+      # Mount config directory - put your config.json here
+      - ./config:/app/config:ro
+    environment:
+      - NODE_ENV=production
+      - TZ=UTC
+    # Default command - runs once and exits (perfect for cron jobs)
+    # command: ["node", "sync.js", "--dry-run"]  # Uncomment for dry-run testing
+
+networks:
+  default:
+    name: ghostfolio-actual-sync
