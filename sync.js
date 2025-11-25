@@ -114,9 +114,8 @@ class GhostfolioClient {
                 const accountName = account.name || account.accountName || account.id || '';
                 
                 if (accountNames.includes(accountName)) {
-                    // Calculate total account value: investments + cash
+                    // Get investment value only (excluding cash balance)
                     let investmentValue = 0;
-                    let cashBalance = 0;
                     
                     // Get investment value (try these fields in order)
                     const investmentFields = ['value', 'valueInBaseCurrency', 'marketValue', 'currentValue'];
@@ -130,18 +129,8 @@ class GhostfolioClient {
                         }
                     }
                     
-                    // Get cash balance
-                    if (account.balanceInBaseCurrency !== undefined && account.balanceInBaseCurrency !== null) {
-                        const cashValue = parseFloat(account.balanceInBaseCurrency);
-                        if (!isNaN(cashValue)) {
-                            cashBalance = cashValue;
-                        }
-                    }
-                    
-                    const totalBalance = investmentValue + cashBalance;
-                    
-                    if (totalBalance > 0) {
-                        accountValues[accountName] = totalBalance;
+                    if (investmentValue > 0) {
+                        accountValues[accountName] = investmentValue;
 
                     } else {
                         const availableFields = {};
@@ -151,7 +140,7 @@ class GhostfolioClient {
                                 availableFields[field] = account[field];
                             }
                         });
-                        console.warn(`Account ${accountName} found but has zero/invalid balance. Available fields: ${JSON.stringify(availableFields)}`);
+                        console.warn(`Account ${accountName} found but has zero/invalid investment value. Available fields: ${JSON.stringify(availableFields)}`);
                     }
                 }
             }
