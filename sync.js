@@ -29,26 +29,8 @@ class GhostfolioClient {
     }
 
     async authenticate() {
-        // Check if password is a long hex string (likely an access token)
-        if (this.password.length > 50 && /^[0-9a-f]+$/i.test(this.password)) {
-
-            this.jwtToken = this.password;
-            this.axiosInstance.defaults.headers['Authorization'] = `Bearer ${this.jwtToken}`;
-            
-            // Test if this works
-            try {
-                const response = await this.axiosInstance.get(`${this.baseUrl}/api/v1/user`);
-                if (response.status === 200) {
-
-                    return;
-                }
-            } catch (error) {
-
-            }
-        }
-
-        // Try login with accessToken
         try {
+            // Use Ghostfolio's standard authentication with access token
             const response = await this.axiosInstance.post(`${this.baseUrl}/api/v1/auth/anonymous`, {
                 accessToken: this.password
             });
@@ -58,12 +40,12 @@ class GhostfolioClient {
 
             if (this.jwtToken) {
                 this.axiosInstance.defaults.headers['Authorization'] = `Bearer ${this.jwtToken}`;
-
+                console.log('Successfully authenticated with Ghostfolio');
             } else {
                 throw new Error(`No token found in auth response: ${JSON.stringify(authResponse)}`);
             }
         } catch (error) {
-            throw new Error(`All authentication methods failed: ${error.message}`);
+            throw new Error(`Ghostfolio authentication failed: ${error.message}`);
         }
     }
 
