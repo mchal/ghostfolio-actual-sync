@@ -264,7 +264,7 @@ class ActualBudgetClient {
                 // Skip auto-reconciliation transactions if requested
                 if (excludeAutoReconciliation && 
                     transaction.notes && 
-                    transaction.notes.startsWith('#ghostfolio Reconcilliation')) {
+                    transaction.notes.startsWith('#ghostfolio Reconciliation')) {
                     return sum;
                 }
                 return sum + (transaction.amount || 0);
@@ -289,7 +289,7 @@ class ActualBudgetClient {
             return transactions.find(transaction => 
                 transaction.date === targetDate && 
                 transaction.notes && 
-                transaction.notes.startsWith('#ghostfolio Reconcilliation')
+                transaction.notes.startsWith('#ghostfolio Reconciliation')
             );
         } catch (error) {
             console.error(`Failed to get existing transactions: ${error.message}`);
@@ -398,7 +398,7 @@ function getEndOfMonthDate(targetDate = new Date()) {
 function createTimestampedNote(ghostfolioAccount) {
     const now = new Date();
     const timestamp = now.toISOString().slice(0, 16).replace('T', ' '); // YYYY-MM-DD HH:MM format
-    return `#ghostfolio Reconcilliation - ${ghostfolioAccount} - as of ${timestamp}`;
+    return `#ghostfolio Reconciliation - ${ghostfolioAccount} - as of ${timestamp}`;
 }
 
 async function processAccount(ghostfolioAccount, actualAccountName, accountValues, actualClient, reconciliationDate, isDryRun = false) {
