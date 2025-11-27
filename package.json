@@ -1,6 +1,6 @@
 {
   "name": "ghostfolio-actual-sync",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Sync Ghostfolio account values to Actual Budget",
   "main": "sync.js",
   "scripts": {
