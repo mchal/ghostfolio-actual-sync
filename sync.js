@@ -248,8 +248,16 @@ class ActualBudgetClient {
                 return 0;
             }
             
+            // Get current date for comparison (YYYY-MM-DD format)
+            const today = new Date().toISOString().split('T')[0];
+            
             // Calculate the balance by summing transaction amounts
             const balance = transactions.reduce((sum, transaction) => {
+                // Skip future transactions
+                if (transaction.date && transaction.date > today) {
+                    return sum;
+                }
+                
                 // Skip auto-reconciliation transactions if requested
                 if (excludeAutoReconciliation && 
                     transaction.notes && 
