@@ -8,7 +8,7 @@
     "dry-run": "node sync.js --dry-run"
   },
   "dependencies": {
-    "@actual-app/api": "^26.1.0",
+    "@actual-app/api": "^26.2.0",
     "axios": "^1.6.0",
     "dotenv": "^16.3.0"
   },
