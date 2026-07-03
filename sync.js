@@ -71,7 +71,7 @@ class GhostfolioClient {
     async triggerFearAndGreedUpdate() {
         try {
             // Use the exact endpoint that the frontend uses
-            const endpoint = '/api/v1/symbol/RAPID_API/_GF_FEAR_AND_GREED_INDEX?includeHistoricalData=365';
+            const endpoint = '/api/v1/symbol/RAPID_API/GF_FEAR_AND_GREED_INDEX_STOCKS?includeHistoricalData=365';
             
             const response = await this.axiosInstance.get(`${this.baseUrl}${endpoint}`);
             console.log(`Successfully triggered fear and greed update (status: ${response.status})`);
