@@ -1,14 +1,26 @@
-# Use official Node.js runtime as base image
+# Dependency build stage.
+# better-sqlite3 (pulled in by @actual-app/api) has no prebuilt binary for every
+# platform, so it falls back to node-gyp and needs python3 + a C++ toolchain.
+FROM node:22-slim AS deps
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends python3 make g++ && \
+    npm ci --omit=dev && \
+    npm cache clean --force && \
+    rm -rf /var/lib/apt/lists/*
+
+# Runtime stage - no compiler toolchain in the final image.
 FROM node:22-slim
 
 # Set working directory in container
 WORKDIR /app
 
-# Copy package files
+COPY --from=deps /app/node_modules ./node_modules
 COPY package*.json ./
-
-# Install dependencies
-RUN npm ci --only=production && npm cache clean --force
 
 # Copy application code
 COPY sync.js ./

@@ -19,13 +19,13 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         fetch-depth: 0
         token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Set up Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v7
       with:
         node-version: '22'
 
@@ -46,14 +46,16 @@ jobs:
       id: bump_version
       run: |
         # Only bump version on main branch pushes (not PRs)
-        if [ "${{ github.event_name }}" == "push" ] && [ "${{ github.ref }}" == "refs/heads/main" ]; then
+        if [ "${{ github.event_name }}" == "push" ] && \
+           [ "${{ github.ref }}" == "refs/heads/main" ]; then
           npm version patch --no-git-tag-version
           new_version=$(node -p "require('./package.json').version")
           echo "new_version=$new_version" >> $GITHUB_OUTPUT
           echo "version_changed=true" >> $GITHUB_OUTPUT
           echo "New version: $new_version"
         else
-          echo "new_version=${{ steps.get_version.outputs.current_version }}" >> $GITHUB_OUTPUT
+          echo "new_version=${{ steps.get_version.outputs.current_version }}" \
+            >> $GITHUB_OUTPUT
           echo "version_changed=false" >> $GITHUB_OUTPUT
           echo "Version not changed (PR or not main branch)"
         fi
@@ -61,23 +63,47 @@ jobs:
     - name: Commit version bump
       if: steps.bump_version.outputs.version_changed == 'true'
       run: |
+        TAG="v${{ steps.bump_version.outputs.new_version }}"
+        NEW="${{ steps.bump_version.outputs.new_version }}"
+
+        # Re-runs replay the original commit and bump the same version again.
+        git fetch --tags --force origin
+        git fetch origin main
+        if git rev-parse -q --verify "refs/tags/$TAG" > /dev/null; then
+          echo "Tag $TAG already exists - skipping version bump and tag push."
+          exit 0
+        fi
+
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
+
+        # An earlier run may have pushed the commit but failed before the tag.
+        # Re-committing then would be a non-fast-forward push, so only tag.
+        remote_version=$(git show origin/main:package.json \
+          | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).version")
+        if [ "$remote_version" = "$NEW" ]; then
+          echo "origin/main already at $NEW - creating tag only."
+          git tag "$TAG" origin/main
+          git push origin "$TAG"
+          exit 0
+        fi
+
         git add package.json
-        git commit -m "chore: bump version to v${{ steps.bump_version.outputs.new_version }}" || echo "No changes to commit"
-        git tag "v${{ steps.bump_version.outputs.new_version }}"
+        git commit -m "chore: bump version to $TAG" || \
+          echo "No changes to commit"
+        git tag "$TAG"
         git push origin main
-        git push origin "v${{ steps.bump_version.outputs.new_version }}"
+        git push origin "$TAG"
 
     - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
+      uses: docker/setup-qemu-action@v4
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      uses: docker/setup-buildx-action@v4
 
     - name: Log in to Docker Hub
       if: github.event_name != 'pull_request'
-      uses: docker/login-action@v3
+      uses: docker/login-action@v4
       with:
         registry: ${{ env.REGISTRY }}
         username: ${{ secrets.DOCKER_USERNAME }}
@@ -85,18 +111,20 @@ jobs:
 
     - name: Extract metadata
       id: meta
-      uses: docker/metadata-action@v5
+      uses: docker/metadata-action@v6
+      env:
+        VERSION_TAG: v${{ steps.bump_version.outputs.new_version }}
       with:
         images: ${{ env.IMAGE_NAME }}
         tags: |
           type=ref,event=branch
           type=ref,event=pr
-          type=semver,pattern={{version}},value=v${{ steps.bump_version.outputs.new_version }}
+          type=semver,pattern={{version}},value=${{ env.VERSION_TAG }}
           type=raw,value=latest,enable={{is_default_branch}}
 
     - name: Build and push Docker image
       id: build
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v7
       with:
         context: .
         platforms: linux/amd64,linux/arm64
